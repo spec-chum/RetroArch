@@ -66,7 +66,10 @@ endif
 ifeq ($(DEBUG), 1)
    OPTIMIZE_FLAG = -O0 -g
 else
-   OPTIMIZE_FLAG = -O3 -ffast-math
+   OPTIMIZE_FLAG = -march=native -O3 -ffast-math
+   ifneq ($(findstring Win32,$(OS)),)
+      LDFLAGS += -mwindows
+   endif
 endif
 
 ifneq ($(findstring Win32,$(OS)),)
@@ -144,7 +147,17 @@ endif
 
 retroarch: $(RARCH_OBJ)
 	@$(if $(Q), $(shell echo echo LD $@),)
+
+ifeq ($(DEBUG), 1)
+	$(Q)$(LINK) -o $@_debug $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
+	@echo "Copying debug exe to RetroArch drive"
+	@cp $@.exe /d/Retro/RetroArch/$@_debug.exe
+else	
 	$(Q)$(LINK) -o $@ $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
+	@echo "Stripping and copying exe to RetroArch drive"
+	@strip $@.exe
+	@cp $@.exe /d/Retro/RetroArch/$@.exe
+endif
 
 $(OBJDIR)/%.o: %.c config.h config.mk
 	@mkdir -p $(dir $@)
