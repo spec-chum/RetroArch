@@ -99,6 +99,13 @@ ifneq ($(V),1)
    Q := @
 endif
 
+ifeq ($(DEBUG), 1)
+   OPTIMIZE_FLAG = -O0 -g
+   DEFINES += -DDEBUG -D_DEBUG
+else
+   OPTIMIZE_FLAG = -march=native -O3 -ffast-math
+endif
+
 ifeq ($(HAVE_DRMINGW), 1)
    DEF_FLAGS += -DHAVE_DRMINGW
    LDFLAGS += $(DRMINGW_LIBS)
@@ -198,7 +205,17 @@ SYMBOL_MAP := -Wl,-Map=output.map
 
 $(TARGET): $(RARCH_OBJ)
 	@$(if $(Q), $(shell echo echo LD $@),)
+
+ifeq ($(DEBUG), 1)
+	$(Q)$(LINK) -o $@_debug $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
+	@echo "Copying debug exe to RetroArch drive"
+	@cp $@.exe /d/Retro/RetroArch/$@_debug.exe
+else	
 	$(Q)$(LINK) -o $@ $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
+	@echo "Stripping and copying exe to RetroArch drive"
+	@strip $@.exe
+	@cp $@.exe /d/Retro/RetroArch/$@.exe
+endif
 
 $(OBJDIR)/%.o: %.c config.h config.mk
 	@mkdir -p $(dir $@)
