@@ -209,12 +209,12 @@ $(TARGET): $(RARCH_OBJ)
 ifeq ($(DEBUG), 1)
 	$(Q)$(LINK) -o $@_debug $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
 	@echo "Copying debug exe to RetroArch drive"
-	@cp $@.exe /d/Retro/RetroArch/$@_debug.exe
+	@cp $@.exe /d/Emulators/RetroArch/$@_debug.exe
 else	
 	$(Q)$(LINK) -o $@ $(RARCH_OBJ) $(LIBS) $(LDFLAGS) $(LIBRARY_DIRS)
 	@echo "Stripping and copying exe to RetroArch drive"
 	@strip $@.exe
-	@cp $@.exe /d/Retro/RetroArch/$@.exe
+	@cp $@.exe /d/Emulators/RetroArch/$@.exe
 endif
 
 $(OBJDIR)/%.o: %.c config.h config.mk
