@@ -99,13 +99,6 @@ ifneq ($(V),1)
    Q := @
 endif
 
-ifeq ($(DEBUG), 1)
-   OPTIMIZE_FLAG = -O0 -g
-   DEFINES += -DDEBUG -D_DEBUG
-else
-   OPTIMIZE_FLAG = -march=native -O3 -ffast-math
-endif
-
 ifeq ($(HAVE_DRMINGW), 1)
    DEF_FLAGS += -DHAVE_DRMINGW
    LDFLAGS += $(DRMINGW_LIBS)
